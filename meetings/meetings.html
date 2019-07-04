@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+       <!-- CSS Links -->
+    <link type="text/css" rel="stylesheet" href="../home/home.css">
+    
+    <link href="https://fonts.googleapis.com/css?family=Comfortaa|Didact+Gothic&display=swap" rel="stylesheet">
+    <!-- Fullcalendar links -->
+
+    <link type="text/css" rel="stylesheet" href="../node_modules/fullcalendar/dist/fullcalendar.min.css">
+    <link type="text/css" rel="stylesheet" href="../node_modules/@fullcalendar/daygrid/main.css">
+    <link type="text/css" rel="stylesheet" href="../node_modules/@fullcalendar/core/main.css">
+    <link type="text/css" rel="stylesheet" href="../node_modules/@fullcalendar/timegrid/main.css">
+    <link type="text/css" rel="stylesheet" href="../node_modules/@fullcalendar/list/main.css">
+    <link rel='stylesheet' href='../node_modules/fullcalendar/dist/fullcalendar.css' />
+    
+
+    <script src='../node_modules/moment/min/moment.min.js'></script>
+    <script src='../node_modules/jquery/dist/jquery.min.js'></script>
+    <script src='../node_modules/fullcalendar/dist/fullcalendar.min.js'></script>
+
+    <script src='../node_modules/@fullcalendar/core/main.js'></script>
+    <script src='../node_modules/@fullcalendar/daygrid/main.js'></script>
+    <script src='../node_modules/@fullcalendar/timegrid/main.js'></script>
+    <script src='../node_modules/@fullcalendar/list/main.js'></script>
+    <script src='../node_modules/@fullcalendar/interaction/main.js'></script>
+    
+    <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script src="../node_modules/tooltip.js/dist/umd/tooltip.js"></script>
+        
+    <!-- Bootstrap links -->
+    <script  src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- datetime -->
+    <script src="../node_modules/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js"></script>
+    <link rel="stylesheet" href="../node_modules/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+</head>
+<body style="background-color: #63b0c5;">
+        <div id="included-navbar"></div>
+        <div class="container-fluid">
+                <div class="row" style="font-family: 'luzro';letter-spacing:0.15cm;padding-bottom: 1rem;">
+                        <h2 style="font-size: 40px;width:100%;text-align: center;color: white;padding-top: 30px;">My Meetings</h2>
+                        
+                </div>
+                <div class="row meetings-calendar" style="padding-top:0px;display: grid;justify-content: center;grid-template-columns: 80%;">
+                    <div id="calendar" class="calendar"></div>
+                </div>
+                
+                      <div id="meeting-modal"></div>
+                <!-- <div class="modal fade" id="showEvent" tabindex="-1" role="dialog" aria-labelledby="showEventTitle" aria-hidden="true" style="font-family: 'luzro'">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header" style="background-color: #63b0c5;color: white">
+                              <h5 class="modal-title" id="showEventTitle">Meeting</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body" id="showEventBody">
+                              
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                          </div>
+                        </div>
+                  </div> -->
+                  
+            
+        </div>
+        
+        <script src="meetings.js"></script>
+        <script src="../api/api.js"></script>
+        <script src="../home/meetingModal.js"></script>
+
+    </body>
+</html>

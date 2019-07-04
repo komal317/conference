@@ -1,0 +1,50 @@
+
+
+
+<nav class="navbar navbar-expand-md" style="border-bottom-left-radius: 34px;border-bottom-right-radius: 34px;background-color: white;padding:0 21px 0 5px;">
+        <a href="#" class="navbar-brand" style="color:#63b0c5;font-family: 'Comfortaa', cursive;font-size: 50px;">
+            <img src="../assets/img/Group 300.png" style="margin-top: -10px;">
+            <span style="margin-bottom: -4rem">Meet In</span>
+        </a>       
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            
+            <div class="navbar-nav ml-auto" id="nav-bar" style="color:#63b0c5;font-size: 25px;">
+                <a href="../home/home.html" class="nav-item nav-link active" id="home" style="color:#63b0c5;">Home</a>
+                <a href="../meetings/meetings.html" class="nav-item nav-link" id="meetings" style="color:#63b0c5;">Meetings</a>
+                <a href="../teams/teams.html" class="nav-item nav-link" id="teams" style="color:#63b0c5;">Teams</a>
+                <a href="javascript:logout();" class="nav-item nav-link" id="profile" style="color:#63b0c5;">Logout</a>
+                
+                <!-- <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Profile
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#">Change Password</a>
+                    <a class="dropdown-item" href="#">Logout</a>
+                  </div> -->
+            </div>
+        </div>
+                
+    </nav>
+<script>
+    $(function(){
+        if(sessionStorage.getItem("isAdmin")==="true"){
+            var navi=document.getElementById("nav-bar")
+            var a=document.createElement("A")
+            a.setAttribute("href","../admin/admin.html")
+            a.setAttribute("class","nav-item nav-link")
+            a.setAttribute("style","color:#63b0c5;")
+            a.setAttribute("id","Admin")
+            a.innerHTML="Admin"
+            navi.appendChild(a)
+        }
+    })
+    function logout(){
+        sessionStorage.removeItem("token")
+        window.location.href="../index.html"; 
+  // console.log(document.getElementById('included-navbar').childNodes.childNodes)
+    }
+</script>

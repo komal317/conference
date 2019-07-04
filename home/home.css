@@ -1,0 +1,186 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'luzro';
+  src: url('../assets/fonts/LUZRO.TTF');
+}  
+
+body {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.7; 
+    font-family: 'luzro';
+    background-color: #63b0c5;
+}
+
+.fc-center{
+  color: white;
+}
+
+.fc-button-group .fc-button{
+  background-color: white;
+  color: black;
+  font-weight: 600;
+}
+
+.navbar-brand img{
+    
+    width: 80px;
+    height: 80px;
+}
+
+
+#rooms{
+    width: 150px;
+    background-color: #b7e9aa;
+    border: 2px solid #b7e9aa;
+    border-radius: 5px;
+    color: gray;
+    font-size: 20px;
+    padding-left: 10px;
+}
+
+.fc-header-toolbar{
+    
+    padding-top: 5%;
+    font-size: 0.8vw; 
+    padding-bottom: 1%;
+    
+    background-image: url("../assets/img/Calendar\ head.png");
+  
+    background-repeat: no-repeat;
+    background-size: cover;
+   
+  
+    
+}
+
+.booking-row{
+  
+  display: none;
+  
+  /* scroll-behavior: smooth; */
+}
+.badge:active{
+  
+  transform: translateY(4px);
+}
+.fc-view-container{
+  
+  background-color: white;
+  /* #FFFBDB */
+}
+
+.row{
+    padding:3rem;
+  
+} 
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active  {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    
+}
+
+ h1{
+  font-family: 'luzro';
+    color: #63b0c5;
+    text-align: center;
+    font-size: 22px;
+    /* padding-bottom: 1rem; */
+} 
+
+.booking-form{
+  font-family: 'luzro';
+  
+}
+
+  .autocomplete {
+    position: relative;
+    display: inline-block;
+  }
+  
+ 
+  
+  .autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    top: 100%;
+    left: 0;
+    right: 0;
+  }
+  
+  .autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff; 
+    border-bottom: 1px solid #d4d4d4; 
+  }
+ 
+  .autocomplete-items div:hover {
+    background-color: #e9e9e9; 
+  }
+  
+  
+  .autocomplete-active {
+    background-color: DodgerBlue !important; 
+    color: #ffffff; 
+  }
+  .form-input:placeholder-shown + .form-label{
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4rem);
+}
+.form-label{
+  padding-left: 10px;
+  padding-top: 2px;
+  transition: all .3s;
+}
+.form-group{
+  margin-bottom: 0px;
+}
+.form-input:not(:placeholder-shown) + .form-label,
+.form-input:focus:not(:placeholder-shown) + .form-label {
+  
+  visibility: visible;
+  
+  opacity: 1;
+}
+
+/* dropdown colour for add member to team */
+.filter-option-inner-inner{
+  color: white;
+}
+
+.modal-header{
+  background-color: #63b0c5;
+}
+.modal-title{
+  font-size: 32px;
+  color: white;
+}
+.fa-users{
+  font-size: 35px;
+  color: white;
+}
+#modal-close-icon{
+  color: white;
+}
+.bootstrap-select > .dropdown-toggle{
+  height:50px;
+  background-color: white;
+  border:1px solid #ced4da;
+}
+.filter-option-inner-inner{
+  color:#495057;
+}
