@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"> 
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src * ;script-src *; style-src *; font-src *;"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSS Links -->
     <link type="text/css" rel="stylesheet" href="home.css">
     
+    <!-- font link -->
     <link href="https://fonts.googleapis.com/css?family=Comfortaa|Didact+Gothic&display=swap" rel="stylesheet">
+    
     <!-- Fullcalendar links -->
-
     <link type="text/css" rel="stylesheet" href="../node_modules/fullcalendar/dist/fullcalendar.min.css">
     <link type="text/css" rel="stylesheet" href="../node_modules/@fullcalendar/daygrid/main.css">
     <link type="text/css" rel="stylesheet" href="../node_modules/@fullcalendar/core/main.css">
@@ -29,8 +31,6 @@
     
     <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
 
-    <!-- <script src="../node_modules/popper.js/dist/popper.js"></script> -->
-    <!-- <script src="https://getbootstrap.com/assets/js/vendor/popper.min.js"></script> -->
  
     <!-- Bootstrap links -->
     <script  src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
@@ -41,15 +41,14 @@
     <script src="../node_modules/bootstrap-datetime-picker/js/bootstrap-datetimepicker.js"></script>
     <link rel="stylesheet" href="../node_modules/bootstrap-datetime-picker/css/bootstrap-datetimepicker.css">
    
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+    <!-- icon link -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
 
     <!-- select -->
- <link rel="stylesheet" href="../node_modules/bootstrap-select/dist/css/bootstrap-select.css">
- <script src="../node_modules/bootstrap-select/dist/js/bootstrap-select.js"></script>
-  </head>
+    <link rel="stylesheet" href="../node_modules/bootstrap-select/dist/css/bootstrap-select.css">
+    <script src="../node_modules/bootstrap-select/dist/js/bootstrap-select.js"></script>
+</head>
 
 <body style="background-color: #63b0c5">
     <div id="included-navbar"></div>
@@ -105,7 +104,14 @@
                         
                         
                       </div>
+                      
+                      <div class="text-center " id="loader">
+                          <div class="spinner-border " role="status" style="margin-top: 25%">
+                            <span class="sr-only">Loading...</span>
+                          </div>
+                        </div>
                     <div class="calendar-background" style="display: grid;justify-content: center;grid-template-columns: 80%">
+
                         <div id="calendar" class="calendar"></div>
                     </div>
                     <!-- <div style="width: 100%;text-align:center;padding-top: 2rem;">

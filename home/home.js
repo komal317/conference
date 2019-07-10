@@ -22,19 +22,6 @@ $('#rooms-slide').carousel({
   
 // });
 
-$('.popover-dismiss').popover({
-  trigger: 'focus',
-  html : true,
-  content: function() {
-    var content = $(this).attr("data-popover-content");
-    return $(content).children(".popover-body").html();
-  },
-  title: function() {
-    var title = $(this).attr("data-popover-content");
-    return $(title).children(".popover-heading").html();
-  },
-  width:'800px'
-})
 $('#start-time').datetimepicker({
   autoclose: true
 });
@@ -42,22 +29,25 @@ $('#end-time').datetimepicker({autoclose: true});
 
 document.addEventListener('DOMContentLoaded', function() {
   
-  console.log(sessionStorage.getItem("token"))
-  console.log(sessionStorage.getItem("isAdmin"))
-  var ca = "eyJhbGciOiJIUzUxMiJ9.eyJjcmVhdGVkIjoxNTYwNzc2OTU5ODQzLCJleHAiOjE1NjEzODE3NTksInVzZXJJZCI6Ik1BTk1JOTQiLCJ1c2VybmFtZSI6Im1pdGFsaUBnbWFpbC5jb20ifQ.CrFoOFEHxCGoh7NGLO602G7Phpgu9V4b0vMICseIC8OoEUoMCihWghAP1DG9aSMXx55RWCdh3cg514pmuov5Yg";
+  var ca = sessionStorage.getItem("token");
   var base64Url = ca.split('.')[1];
   var decodedValue = JSON.parse(window.atob(base64Url));
+  sessionStorage.removeItem("userId")
   sessionStorage.setItem("userId",decodedValue['userId'])
-
+  sessionStorage.removeItem("isAdmin")
+  sessionStorage.setItem("isAdmin",decodedValue['isAdmin'])
+  console.log(sessionStorage.getItem("token"))
+  console.log("userid "+sessionStorage.getItem("userId"))
   $(".booking-row").css("pointer-events","none");
   
   var room_id;
+  var room_id_send;
   var calendarEl = document.getElementById('calendar');
 
   var calendar = new FullCalendar.Calendar(calendarEl, {
     plugins: [ 'dayGrid', 'timeGrid', 'list','interaction' ],
     // events:  {url: "http://localhost:8181/path/Recursion"},
-    
+    // timeZone: 'UTC',
     aspectRatio: 2,
     eventBackgroundColor : "#63b0c5",
     
@@ -89,25 +79,34 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // document.getElementById("start-time").value=getDateToDisplay(info.start);
       // document.getElementById("end-time").value=getDateToDisplay(info.end);
-     
+     console.log(info.start)
+     console.log(info.end)
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           var x = new XMLHttpRequest();
           x.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
+                console.log(JSON.parse(x.responseText))
                 
-
-                let meetingmodal=new meetingModal(true,false,false,"","",info.start,info.end,JSON.parse(xhttp.responseText),JSON.parse(x.responseText),"")
+                let meetingmodal=new meetingModal(true,false,false,"","",info.start,info.end,"",JSON.parse(xhttp.responseText),JSON.parse(x.responseText),"")
                 meetingmodal.move();
             }
+            else if(this.readyState == 4 && (this.status == 409 || this.status == 400 || this.status == 500 || this.status == 404)){
+              $("#error-popup").modal("show")
+            }
           };
-          x.open("GET", 'http://localhost:8181/teams/info', true);
+          x.open("GET", 'http://localhost:8181/api/teams', true);
+          x.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
           x.send();
             
         }
+        else if(this.readyState == 4 && (this.status == 409 || this.status == 400 || this.status == 500 || this.status == 404)){
+          $("#error-popup").modal("show")
+        }
       };
-      xhttp.open("GET", 'http://localhost:8181/users', true);
+      xhttp.open("GET", 'http://localhost:8181/api/users', true);
+      xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
       xhttp.send();
       
       // var array = calendar.getEvents();
@@ -148,8 +147,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // })
 
   $('.carousel-inner').on("click",'.room-box-badge',function(){
+    document.getElementById("loader").style.display="block";
+    room_id=this.innerHTML;
     
-    room_id=this.id;
+    room_id_send=this.id.split("-")[1]
+    console.log(room_id_send)
     $(".booking-row").css("visibility","visible");
     $(".booking-row").css("overflow","unset");
     $(".booking-row").css("height","fit-content");
@@ -166,28 +168,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // });
     // $('#'+this.id).popover("show")
     // $('#'+this.id).css("transform","translateY(18px)")
-    if(calendar.getEventSources()[0]){
-      console.log(calendar.getEventSources()[0])
-      
-      console.log(calendar.getEvents())
-      calendar.getEventSources()[0].remove()  
-      calendar.addEventSource("http://localhost:8181/path/"+this.id)
-      // getAllEvents("/path/"+this.id)
-      window.scrollBy({
-        top: 10000,
-        behavior: 'smooth'
-      });
-     
-    }
-    else{
-      calendar.addEventSource("http://localhost:8181/path/"+this.id)
-      window.scrollBy({
-        top: 10000,
-        behavior: 'smooth'
-      });
     
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log(JSON.parse(xhttp.responseText))
+        if(calendar.getEventSources()[0]){
+          console.log(calendar.getEventSources()[0])
+          
+          console.log(calendar.getEvents())
+          calendar.getEventSources()[0].remove()  
+          calendar.addEventSource(JSON.parse(xhttp.responseText))
+          // getAllEvents("/path/"+this.id)
+          window.scrollBy({
+            top: 10000,
+            behavior: 'smooth'
+          });
+         
+        }
+        else{
+          calendar.addEventSource(JSON.parse(xhttp.responseText))
+          window.scrollBy({
+            top: 10000,
+            behavior: 'smooth'
+          });
+        
+        
+        }
+        document.getElementById("loader").style.display="none";
+      }
+      else if(this.readyState == 4 && (this.status == 409 || this.status == 400 || this.status == 500 || this.status == 404)){
+        $("#error-popup").modal("show")
+      }
+    };
+    xhttp.open("GET", 'http://localhost:8181/api/events/all/'+room_id_send  , true);
+    xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
+    xhttp.send();
     
-    }
     
   });
   
@@ -207,6 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
   setRoomsCarousel(width_carousel_inner);
   
   window.bookMeeting = function(){
+    document.getElementById("loader").style.display="block";
+    console.log("rooooooooooom"+room_id_send)
+  //   $("div.spanner").addClass("show");
+  // $("div.overlay").addClass("show");
     var title=document.getElementById("title-field").value;
     var agenda=document.getElementById("agenda-field").value;
     let start_datetime = document.getElementById("update-start-time").value;
@@ -215,16 +236,23 @@ document.addEventListener('DOMContentLoaded', function() {
     let end_datetime = document.getElementById("update-end-time").value;
     let end_date = end_datetime.replace(" ","T")
     
-   
+    var radioValue = $("input[name='repeat']:checked").val();
+    console.log(radioValue)
       var array = calendar.getEvents();
+      // console.log("calendar.getevents")
+      // console.log(array)
       for(var i in array){
         var start=new Date(start_datetime);
         var end=new Date(end_datetime);
         var startDate=array[i].start;
         var endDate=array[i].end;
-       
-        var condition1 = (start==(startDate) && end==(endDate));
-        
+      //   console.log(start_datetime)
+      //  console.log(start)
+      //  console.log(startDate)
+      //  console.log(end)
+      //  console.log(endDate)
+        var condition1 = (start.getTime()==(startDate.getTime()) && end.getTime()==(endDate.getTime()));
+        console.log("condition1 "+condition1)
         var condition2 = (start<(endDate) && end>(endDate));
        
         var condition3 = (start<(startDate) && end>(startDate));
@@ -233,13 +261,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (condition1 || condition2 || condition3 ||  condition4){
         document.getElementById("error-msg").innerHTML="*This slot is booked, try another one";
+        document.getElementById("loader").style.display="none";
             return false;
         } 
       }
       var selectedTeams=$(".edit-teams").children("option:selected");
       var sendselectedTeams=[];
       for(var v=0;v<selectedTeams.length;v++){
-          sendselectedTeams.push(selectedTeams[v].innerHTML)
+          sendselectedTeams.push(selectedTeams[v].value)
+          console.log("here")
           console.log(sendselectedTeams)
       }
       var selectedMembers=$(".edit-members").children("option:selected");
@@ -250,6 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       if(sendselectedMembers.length==0 && sendselectedTeams.length==0){
         document.getElementById("error-msg").innerHTML="*Select atleast one team or participant";
+        document.getElementById("loader").style.display="none";
         return false;
       }
     // let member=[]; let team=[];
@@ -269,22 +300,36 @@ document.addEventListener('DOMContentLoaded', function() {
       
     // }
    
+      // console.log("start : "+start_datetime)
+      // console.log("start : "+start_datetime.split(" ")[1])
+      // console.log("start day: "+new Date(start_datetime).getDay())
+      // var newd=(new Date(start_datetime)).addMonths(2);
+      // var rangeEnd=newd.getFullYear()+"-"+((newd.getMonth()+1)>9?(newd.getMonth()+1):('0'+(newd.getMonth()+1)))+"-"+(newd.getDate()<9?('0'+(newd.getDate())):(newd.getDate()))
+      // console.log("start date: "+newd)
+      // console.log("end : "+end_datetime)
+      // console.log("end : "+end_datetime.split(" ",1))
+      // console.log("end day: "+new Date(end_datetime).getDay())
+      // console.log("end date: "+(new Date(end_datetime).getMonth() +2))
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         
-        calendar.addEvent({
-          title:title,
-          start:start_date,
-          end:end_date
-        },calendar.getEventSources()[0])
+        console.log(room_id_send)
+        console.log("room-"+room_id_send)
+        document.getElementById("room-"+room_id_send).click();
         // resetForm();
-      
+        document.getElementById("loader").style.display="none";
+
+        // $("div.spanner").removeClass("show");
+        // $("div.overlay").removeClass("show");
+      }
+      else if(this.readyState == 4 && (this.status == 409 || this.status == 400 || this.status == 500 || this.status == 404)){
+        $("#error-popup").modal("show")
       }
     };
 
-    xhttp.open("POST", "http://localhost:8181/send", true);
+    xhttp.open("POST", "http://localhost:8181/api/events", true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
     xhttp.send(JSON.stringify({
@@ -295,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
       'members':sendselectedMembers,
       'teams':sendselectedTeams,
       'roomName':room_id,
-      'repeat':" daily,weekly none"
+      'repeat':radioValue
     }));  
     $("#meeting-popup").modal("hide")
     return true;
@@ -310,6 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
 })
+
 // $('.popover-dismiss').popover({
 //   trigger: 'focus'
 // });
@@ -326,26 +372,21 @@ var setRoomsCarousel = function(width){
   var width_without_gaps=(width - (4 * 150));
 
   var width_badge=(width_without_gaps / 5);
-
-  fetch('http://localhost:8181/getRooms')
-  .then(
-    function(response) {
-      if (response.status !== 200) {
-        console.log('problem. Status Code: ' +response.status);
-        return;
-      }
-                    
-      // Examine the text in the response
-      response.json().then(function(data) {
-        var rooms_data=data;
-        // console.log(rooms_data);
+  console.log("llppp")
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      
+      var rooms_data=JSON.parse(xhttp.responseText);
         
+        console.log(rooms_data)
         for(var rm in rooms_data){
-          // console.log(rooms_data[rm])
+          console.log(rm)
+          console.log(rooms_data[rm])
           var parent=document.getElementById("room-carousel-inner");
-          if((Object.keys(rooms_data).indexOf(rm)) % 5 ===0 ){
+          if(rm % 5 == 0 ){
             var newDiv=document.createElement("DIV");
-            if((Object.keys(rooms_data).indexOf(rm)) ===0){
+            if(rm == 0){
               newDiv.setAttribute("class","carousel-item active")
             } 
             else{
@@ -358,33 +399,12 @@ var setRoomsCarousel = function(width){
 
             var newRoomSpan=document.createElement("SPAN");
             newRoomSpan.setAttribute("class","room-box-badge badge")
-            newRoomSpan.setAttribute("id",rm)
+            newRoomSpan.setAttribute("id","room-"+rooms_data[rm].roomId)
             newRoomSpan.setAttribute("data-toggle","tooltip")
-            // newRoomSpan.setAttribute("data-placement","bottom")
-            // newRoomSpan.setAttribute("data-trigger","focus")
-            // newRoomSpan.setAttribute("data-trigger","focus")
-            // newRoomSpan.setAttribute("data-html","true")
-            // var ul=document.createElement("UL")
-            // ul.setAttribute("role","tooltip")
-            // ul.setAttribute("class","tooltip bs-tooltip-top")
-            // ul.setAttribute("id","myList")
-            // for(var i in rooms_data[rm]){
-            //   var li=document.createElement("LI");
-            //   li.setAttribute("class","tooltip-inner")
-            //   li.innerHTML=rooms_data[rm][i];
-            //   ul.appendChild(li)
-              
-            // }
-            // console.log(ul);
-            // $('[data-toggle="tooltip"]').tooltip(
-            //   {
-            //     title : ul,
-            //     html: true
-            //   }
-            // ); 
-             newRoomSpan.setAttribute("title", rm+" Specifications");
-             newRoomSpan.setAttribute("data-content",rooms_data[rm].toString())
-            newRoomSpan.innerHTML=rm
+            
+             newRoomSpan.setAttribute("title"," Capacity : "+rooms_data[rm].capacity+ " People");
+            //  newRoomSpan.setAttribute("data-content",rooms_data[rm].toString())
+            newRoomSpan.innerHTML=rooms_data[rm].name
             newRoomSpan.setAttribute("style"," box-shadow: 0 8px 8px 0 rgba(0, 0, 0, 0.2);font-size:20px;background-color: white; color: #63b0c5;border-radius: 15px;cursor: pointer; display: flex;justify-content: center;align-items: center;")
             newChildDiv.appendChild(newRoomSpan);
             
@@ -396,36 +416,106 @@ var setRoomsCarousel = function(width){
           else{
             var newRoomSpan=document.createElement("SPAN");
             newRoomSpan.setAttribute("class","room-box-badge badge")
-            newRoomSpan.setAttribute("id",rm)
+            newRoomSpan.setAttribute("id","room-"+rooms_data[rm].roomId)
             newRoomSpan.setAttribute("data-toggle","tooltip")
-            newRoomSpan.setAttribute("title", rm+" Specifications");
-            newRoomSpan.setAttribute("data-content",rooms_data[rm].toString())
-            newRoomSpan.innerHTML=rm
+            newRoomSpan.setAttribute("title"," Capacity : "+rooms_data[rm].capacity+ " People");
+            // newRoomSpan.setAttribute("data-content",rooms_data[rm].toString())
+            newRoomSpan.innerHTML=rooms_data[rm].name
             newRoomSpan.setAttribute("style","box-shadow: 0 8px 8px 0 rgba(0, 0, 0, 0.2);font-size:20px;background-color: white; color: #63b0c5;border-radius: 15px;cursor: pointer;display: flex;justify-content: center;align-items: center;")
             
 
             newChildDiv.appendChild(newRoomSpan);
+
           }
           
 
-
         }
+    
+    }
+    else if(this.readyState == 4 && (this.status == 409 || this.status == 400 || this.status == 500 || this.status == 404)){
+      $("#error-popup").modal("show")
+    }
+  };
+
+  xhttp.open("GET", "http://localhost:8181/api/rooms", true);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
+  xhttp.send();
+  // fetch('http://localhost:8181/api/rooms')
+  // .then(
+  //   function(response) {
+  //     if (response.status !== 200) {
+  //       console.log('problem. Status Code: ' +response.status);
+  //       return;
+  //     }
+                    
+  //     // Examine the text in the response
+  //     response.json().then(function(data) {
+        
         
 
 
 
 
-      });
-    }
-  )
-  .catch(function(err) {
-    console.log('Fetch Error :-S', err);
-  });
+  //     });
+  //   }
+  // )
+  // .catch(function(err) {
+  //   console.log('Fetch Error :-S', err);
+  // });
 
 
 }
 
+// for(var rm in rooms_data){
+        //   // console.log(rooms_data[rm])
+        //   var parent=document.getElementById("room-carousel-inner");
+        //   if((Object.keys(rooms_data).indexOf(rm)) % 5 ===0 ){
+        //     var newDiv=document.createElement("DIV");
+        //     if((Object.keys(rooms_data).indexOf(rm)) ===0){
+        //       newDiv.setAttribute("class","carousel-item active")
+        //     } 
+        //     else{
+        //       newDiv.setAttribute("class","carousel-item")
+        //     }    
+            
+        //     var newChildDiv=document.createElement("DIV");
+        //     newChildDiv.setAttribute("class","room-box");
+        //     newChildDiv.setAttribute("style","display:grid;grid-template-columns:repeat(5,1fr);grid-column-gap: 100px;grid-template-rows:80px;")
 
+        //     var newRoomSpan=document.createElement("SPAN");
+        //     newRoomSpan.setAttribute("class","room-box-badge badge")
+        //     newRoomSpan.setAttribute("id",rm)
+        //     newRoomSpan.setAttribute("data-toggle","tooltip")
+            
+        //      newRoomSpan.setAttribute("title", rm+" Specifications");
+        //      newRoomSpan.setAttribute("data-content",rooms_data[rm].toString())
+        //     newRoomSpan.innerHTML=rm
+        //     newRoomSpan.setAttribute("style"," box-shadow: 0 8px 8px 0 rgba(0, 0, 0, 0.2);font-size:20px;background-color: white; color: #63b0c5;border-radius: 15px;cursor: pointer; display: flex;justify-content: center;align-items: center;")
+        //     newChildDiv.appendChild(newRoomSpan);
+            
+        //     newDiv.appendChild(newChildDiv);
+        //     parent.appendChild(newDiv);
+            
+
+        //   }
+        //   else{
+        //     var newRoomSpan=document.createElement("SPAN");
+        //     newRoomSpan.setAttribute("class","room-box-badge badge")
+        //     newRoomSpan.setAttribute("id",rm)
+        //     newRoomSpan.setAttribute("data-toggle","tooltip")
+        //     newRoomSpan.setAttribute("title", rm+" Specifications");
+        //     newRoomSpan.setAttribute("data-content",rooms_data[rm].toString())
+        //     newRoomSpan.innerHTML=rm
+        //     newRoomSpan.setAttribute("style","box-shadow: 0 8px 8px 0 rgba(0, 0, 0, 0.2);font-size:20px;background-color: white; color: #63b0c5;border-radius: 15px;cursor: pointer;display: flex;justify-content: center;align-items: center;")
+            
+
+        //     newChildDiv.appendChild(newRoomSpan);
+        //   }
+          
+
+
+        // }
 
 
 // function autocomplete(inp, arr,myElement1) {

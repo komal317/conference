@@ -18,16 +18,17 @@ var nonMembers=[];
 //     e.stopPropagation();
 // });
 function postAddMembersFunction(xhttp,teamId,sendSelected,sendSelectedValue){
-    // console.log(xhttp.responseText);
+    console.log(xhttp.responseText);
     var memberList=document.getElementById("memberList "+teamId);
-    // console.log(memberList)
+    console.log(memberList)
     for(var x in sendSelected){
-        // console.log(sendSelected[x]);
-        // console.log(sendSelectedValue[x])
+        console.log(sendSelected[x]);
+        console.log(sendSelectedValue[x])
         var list=document.createElement("LI")
         list.setAttribute("class","list-group-item memberList team-"+teamId)
         list.setAttribute('id',sendSelected[x]);
         list.appendChild(document.createTextNode(sendSelectedValue[x]));
+        console.log(sendSelected[x])
         memberList.appendChild(list);
     }
 
@@ -84,7 +85,7 @@ function getNonMembersFunction(xhttp,teamId) {
     sel.setAttribute("title"," + Add Member")
     sel.setAttribute("data-size","7")
     for(var t in nonMembers){
-        
+        console.log(nonMembers[t]['name'])
         var option=document.createElement("OPTION");
         option.setAttribute("id",nonMembers[t]['empId'])
         option.innerHTML=nonMembers[t]['name'];
@@ -185,7 +186,8 @@ function doneClicked(teamId){
     for(var v=0;v<selected.length;v++){
         sendSelected.push(selected[v]['id'])
         sendSelectedValue.push(selected[v].innerHTML)
-        // console.log(selected[v].innerHTML)
+        console.log("in sending array")
+        console.log(selected[v].innerHTML)
     }
     // console.log(sendSelected)
     postAddMembers("/teams/"+teamId+"/addmembers",teamId,sendSelected,sendSelectedValue)

@@ -8,7 +8,7 @@ function getMyTeams(apiName){
       getMyTeamsFunction(this)
     }
   };
-  xhttp.open("GET", 'http://localhost:8181/'+apiName, true);
+  xhttp.open("GET", 'http://localhost:8181/api/'+apiName, true);
   xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
   xhttp.send();
 }
@@ -23,7 +23,7 @@ function getNonMembers(apiName,teamId){
       getNonMembersFunction(this,teamId)
     }
   };
-  xhttp.open("GET", 'http://localhost:8181/'+apiName, true);
+  xhttp.open("GET", 'http://localhost:8181/api'+apiName, true);
   xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
   xhttp.send();
 }
@@ -31,14 +31,14 @@ function getNonMembers(apiName,teamId){
 function postAddMembers(apiName,teamId,idArray,nameArray){
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      
+    if (this.readyState == 4 && this.status == 201) {
+      console.log("hello  ")
       postAddMembersFunction(this,teamId,idArray,nameArray)
     
     }
   };
 
-  xhttp.open("POST", "http://localhost:8181/"+apiName, true);
+  xhttp.open("POST", "http://localhost:8181/api"+apiName, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
   xhttp.send(JSON.stringify({'empIds':idArray}));  
@@ -46,6 +46,8 @@ function postAddMembers(apiName,teamId,idArray,nameArray){
 
 function postDeleteMembers(apiName,teamId,empId){
   var xhttp = new XMLHttpRequest();
+  var ids=[];
+  ids.push(empId)
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       
@@ -54,25 +56,31 @@ function postDeleteMembers(apiName,teamId,empId){
     }
   };
 
-  xhttp.open("POST", "http://localhost:8181/"+apiName, true);
+  xhttp.open("DELETE", "http://localhost:8181/api"+apiName, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
-  xhttp.send(JSON.stringify({'empId':empId}));  
+  xhttp.send(JSON.stringify({'empIds':ids}));  
 }
 
 // TEAMS OVER
 
 // MEETINGS
 function getMyMeetings(apiName){
-   
+  document.getElementById("loader").style.display="block";
   var xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function() {
+  if(this.readyState == 4 && this.status == 404){
+    document.getElementById("loader").style.display="none";
+    getMyMeetingsFunction(this)
+  }
   if (this.readyState == 4 && this.status == 200) {
+    document.getElementById("loader").style.display="none";
       console.log(JSON.parse(xhttp.responseText))
     getMyMeetingsFunction(this)
   }
+  
 };
-xhttp.open("GET", 'http://localhost:8181/'+apiName, true);
+xhttp.open("GET", 'http://localhost:8181/api/'+apiName, true);
 xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
 xhttp.send();
 }
@@ -86,7 +94,7 @@ xhttp.onreadystatechange = function() {
       getAllEventsFunction(this)
   }
 };
-xhttp.open("GET", 'http://localhost:8181/'+apiName, true);
+xhttp.open("GET", 'http://localhost:8181/api/'+apiName, true);
 xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
 xhttp.send();
 }
@@ -106,3 +114,9 @@ xhttp.send();
 // // xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
 // xhttp.send();
 // }
+
+
+
+// ADMIN
+
+

@@ -18,7 +18,7 @@ document.head.appendChild(imported);
 
 class meetingModal{
 
-    constructor (book,user,organizer,myMeetings,allMeetings,start,end,nonmembers,teams,rooms,eventOfId) {
+    constructor (book,user,organizer,myMeetings,allMeetings,start,end,clickedId,nonmembers,teams,rooms,eventOfId) {
         // this.headerText=header;
         this.book=book;
         this.user=user;
@@ -28,6 +28,10 @@ class meetingModal{
         console.log(this.allMeetings)
         this.start=start;
         this.end=end;
+        console.log("heres start and end selected")
+        console.log(this.start)
+        console.log(this.end)
+        this.clickedId=clickedId;
         this.nonmembers=nonmembers;
         this.allTeams=teams
         console.log()
@@ -88,9 +92,8 @@ class meetingModal{
         title.innerHTML="Book your meeting";
       else{
         for(var x in this.myMeetings){
-          startTime=new Date(this.myMeetings[x]['start'])
-          endTime=new Date(this.myMeetings[x]['end'])
-          if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
+          
+          if(this.myMeetings[x]['id'] == this.clickedId){
             title.innerHTML=this.myMeetings[x]['title']
           }
         }
@@ -155,17 +158,25 @@ class meetingModal{
         input.setAttribute("type","text")
         input.setAttribute("autocomplete","off");
         input.setAttribute("required","")
+        var clickedId=this.clickedId
         if(this.book)
         {div.setAttribute("style","grid-column:1/span 2;padding-bottom:1rem")}
         else{
           div.setAttribute("style","visibility:hidden;height:0px;")
+          // for(var x in this.myMeetings){
+          //   startTime=new Date(this.myMeetings[x]['start'])
+          //   endTime=new Date(this.myMeetings[x]['end'])
+          //   if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
+          //     input.setAttribute("value",this.myMeetings[x]['title'])
+          //   }
+          // }
           for(var x in this.myMeetings){
-            startTime=new Date(this.myMeetings[x]['start'])
-            endTime=new Date(this.myMeetings[x]['end'])
-            if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
-              input.setAttribute("value",this.myMeetings[x]['title'])
+            
+              if(this.myMeetings[x]['id'] == clickedId){
+                console.log("this.myMeetings[x]['id'] == clickedId")
+                input.setAttribute("value",this.myMeetings[x]['title'])
+              }
             }
-          }
         }
         // input.setAttribute("value",this.myMeetings[x]['title'])
         // div2.appendChild(input)
@@ -196,7 +207,12 @@ class meetingModal{
             row2.appendChild(span);
             
             var span=document.createElement("SPAN");
-            span.innerHTML="&nbsp;&nbsp;&nbsp;&nbsp;"+this.myMeetings[x]['organizer']['name']+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+            for(var x in this.myMeetings){
+              if(this.myMeetings[x]['id'] == this.clickedId){
+                span.innerHTML="&nbsp;&nbsp;&nbsp;&nbsp;"+this.myMeetings[x]['organizer']['name']+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+              }
+            }
+            
             row2.appendChild(span)
             
             
@@ -204,7 +220,7 @@ class meetingModal{
               startTime=new Date(this.myMeetings[x]['start'])
               endTime=new Date(this.myMeetings[x]['end'])
               
-              if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
+              if(this.myMeetings[x]['id'] == this.clickedId){
                 if(this.myMeetings[x]['organizer']['empId']===sessionStorage.getItem("userId")){
                   var roomname=this.myMeetings[x]['roomName']
                   var id=this.myMeetings[x]['id']
@@ -241,9 +257,22 @@ class meetingModal{
                     
                     btn.setAttribute("class","btn btn-outline-info")
                     btn.innerHTML="Submit"
+                    btn.setAttribute("style","margin-left:2rem;margin-right:2rem")
+                    btn.setAttribute("type","submit")
+                    form.setAttribute("onsubmit","return editMeeting(\'"+roomname+"\',\'"+id+"\')")
                     footer.setAttribute("style","padding-top:2rem;grid-column:1/span 2;justify-self:center")
                     footer.appendChild(btn)
-                    form.setAttribute("onsubmit","return editMeeting(\'"+roomname+"\',\'"+id+"\')")
+                    
+                    var btn=document.createElement("BUTTON")
+                    
+                    btn.setAttribute("class","btn btn-outline-info")
+                    btn.setAttribute("style","margin-left:2rem;margin-right:2rem")
+                    btn.setAttribute("type","button")
+                    btn.innerHTML="Cancel Meeting"
+                    btn.setAttribute("onclick","return cancelMeeting(\'"+id+"\')")
+                    // btn.setAttribute("data-dismiss","")
+                    footer.appendChild(btn)
+
                   })
                   console.log(this.organizer)
                   i.setAttribute("style","cursor:pointer;float:right;font-size:20px;")
@@ -272,18 +301,7 @@ class meetingModal{
           row2.setAttribute("class","row2 form-group")
           row2.setAttribute("id","agenda-row-2")
           row2.setAttribute("style","color:gray;font-size:16px")
-          // var div2=document.createElement("SPAN")
-          // div2.setAttribute("class","input-group mb-3")
-          // // div2.setAttribute("style","width:50%")
-          // var div1=document.createElement("SPAN")
-          // div1.setAttribute("class","input-group-prepend")
-          // var span=document.createElement("SPAN")
-          // span.setAttribute("class","input-group-text")
-          // var fa=document.createElement("I");
-          // fa.setAttribute("class","	fas fa-file-alt	")
-          // span.appendChild(fa)
-          // div1.appendChild(span)
-          // div2.appendChild(div1)
+          
           var input=document.createElement("INPUT")
           input.setAttribute("id","agenda-field")
           input.setAttribute("class","form-control form-input")
@@ -298,9 +316,7 @@ class meetingModal{
         else{
           input.setAttribute("disabled","")
           for(var x in this.myMeetings){
-            startTime=new Date(this.myMeetings[x]['start'])
-            endTime=new Date(this.myMeetings[x]['end'])
-            if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
+            if(this.myMeetings[x]['id'] == this.clickedId){
               input.setAttribute("value",this.myMeetings[x]['agenda'])
             }
           }
@@ -348,7 +364,8 @@ class meetingModal{
                 input.setAttribute("type","text")
                 input.setAttribute("autocomplete","off");
                 input.setAttribute("required","")
-                input.setAttribute("data-date-format","yyyy-mm-dd hh:ii")
+                input.setAttribute("readonly","")
+                input.setAttribute("data-date-format","yyyy-mm-dd hh:ii:ss")
 
           if(this.book)
           {
@@ -364,7 +381,7 @@ class meetingModal{
             for(var x in this.myMeetings){
               startTime=new Date(this.myMeetings[x]['start'])
               endTime=new Date(this.myMeetings[x]['end'])
-              if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
+              if(this.myMeetings[x]['id'] == this.clickedId){
                 var sdate=weekday[startTime.getDay()]+" "+monthNames[startTime.getMonth()]+" "+startTime.getDate()+" "+startTime.getFullYear()
                 
                 var stime=startTime.getHours()+":"+startTime.getMinutes();
@@ -415,7 +432,8 @@ class meetingModal{
                 input.setAttribute("type","text")
                 input.setAttribute("autocomplete","off");
                 input.setAttribute("required","")
-                input.setAttribute("data-date-format","yyyy-mm-dd hh:ii")
+                input.setAttribute("readonly","")
+                input.setAttribute("data-date-format","yyyy-mm-dd hh:ii:ss")
                 if(this.book)
           {
             var date=this.end
@@ -432,7 +450,7 @@ class meetingModal{
             for(var x in this.myMeetings){
               startTime=new Date(this.myMeetings[x]['start'])
               endTime=new Date(this.myMeetings[x]['end'])
-              if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
+              if(this.myMeetings[x]['id'] == this.clickedId){
                 
                 var edate=weekday[endTime.getDay()]+" "+monthNames[endTime.getMonth()]+" "+endTime.getDate()+" "+endTime.getFullYear()
                 
@@ -469,9 +487,7 @@ class meetingModal{
                   row2.setAttribute("class","row2")
                   row2.setAttribute("style","color:gray;font-size:16px")
                   for(var x in this.myMeetings){
-                    startTime=new Date(this.myMeetings[x]['start'])
-                    endTime=new Date(this.myMeetings[x]['end'])
-                    if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
+                    if(this.myMeetings[x]['id'] == this.clickedId){
                       row2.innerHTML=this.myMeetings[x]['roomName']+"&nbsp;&nbsp;[ "+this.myMeetings[x]['specifications']+" ]";
                     }
                   }
@@ -509,9 +525,9 @@ class meetingModal{
             sel.setAttribute("data-selected-text-format","count")
             for(var t in this.allTeams){
                 var option=document.createElement("OPTION");
-                // option.setAttribute("id",this.nonteams[t].empId)
+                option.setAttribute("id",this.allTeams[t].teamId)
                 
-                option.innerHTML=this.allTeams[t];
+                option.innerHTML=this.allTeams[t].teamName;
                 sel.appendChild(option)
             }
             row2.appendChild(sel)
@@ -570,14 +586,25 @@ class meetingModal{
             else{
               span.setAttribute("style","visibility:hidden;float:right")
             }
+            // console.log("members "+this.myMeetings[x]['members'])
             for(var t in this.nonmembers){
+              if(this.nonmembers[t].empId == sessionStorage.getItem("userId"))
+                { console.log("continue "+this.nonmembers[t].name)
+                  continue;}
                 var option=document.createElement("OPTION");
+                
                 option.setAttribute("id",this.nonmembers[t].empId)
                 if(this.user){
-                  if(this.myMeetings[x]['members'].find(el => el.empId === this.nonmembers[t].empId)){
-                    option.setAttribute("Selected","")
-  
+                  for(var x in this.myMeetings){
+                    if(this.myMeetings[x]['id'] == this.clickedId){
+                      if(this.myMeetings[x]['members'].find(el => el.empId === this.nonmembers[t].empId)){
+                        option.setAttribute("Selected","")
+                        console.log("selected all users "+this.nonmembers[t].name)
+                        
+                      }
+                    }
                   }
+                  
                 }
                 
                 option.innerHTML=this.nonmembers[t].name;
@@ -597,11 +624,10 @@ class meetingModal{
             row2.setAttribute("class","row2")
             if(this.user){
               for(var x in this.myMeetings){
-                startTime=new Date(this.myMeetings[x]['start'])
-                endTime=new Date(this.myMeetings[x]['end'])
-                if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
+                if(this.myMeetings[x]['id'] == this.clickedId){
                   row2.setAttribute("style","color:gray;font-size:16px")
                   for(var y in this.myMeetings[x]['members']){
+                    console.log(this.myMeetings[x]['members'][y]['name'])
                     if(y!=this.myMeetings[x]['members'].length-1){
                       row2.innerHTML+=this.myMeetings[x]['members'][y]['name']+",&nbsp;&nbsp; ";
                     }
@@ -619,6 +645,96 @@ class meetingModal{
             form.appendChild(div)
             // var hr=document.createElement("HR")
             // div.appendChild(hr)
+
+            if(this.book){
+              var div=document.createElement("DIV")
+              div.setAttribute("style","grid-column:1/span 2;padding-bottom:1rem")
+            
+              div.setAttribute("id","repeat")
+              var row1=document.createElement("DIV");
+              row1.setAttribute("class","row1")
+              var span=document.createElement("SPAN");
+              // span.setAttribute("class","badge btn btn-outline-info")
+              span.setAttribute("style","letter-spacing:0.03cm;margin-bottom:15px;font-size:22px;")
+              span.innerHTML="Repeat Meeting";
+              row1.appendChild(span);
+              var row2=document.createElement("DIV");
+              row2.setAttribute("class","row2 form-group")
+              row2.setAttribute("id","repeat-row-2")
+              row2.setAttribute("style","color:gray;font-size:16px;margin:1rem")
+               
+              var radio=document.createElement("DIV");
+              radio.setAttribute("class","custom-control custom-radio custom-control-inline")
+
+              var input=document.createElement("INPUT")
+              input.setAttribute("id","daily")
+              input.setAttribute("class","custom-control-input")
+              input.setAttribute("name","repeat")
+              input.setAttribute("type","radio")
+              input.setAttribute("value","daily")
+
+              var label=document.createElement("LABEL")
+              label.setAttribute("class","custom-control-label")
+              label.setAttribute("for","daily")
+              label.innerHTML="Daily";
+
+              radio.appendChild(input)
+              radio.appendChild(label)
+              row2.appendChild(radio)
+
+              var radio=document.createElement("DIV");
+              radio.setAttribute("class","custom-control custom-radio custom-control-inline")
+
+              var input=document.createElement("INPUT")
+              input.setAttribute("id","weekly")
+              input.setAttribute("class","custom-control-input")
+              input.setAttribute("name","repeat")
+              input.setAttribute("type","radio")
+              input.setAttribute("value","weekly")
+
+              var label=document.createElement("LABEL")
+              label.setAttribute("class","custom-control-label")
+              label.setAttribute("for","weekly")
+              label.innerHTML="Weekly";
+
+              radio.appendChild(input)
+              radio.appendChild(label)
+              row2.appendChild(radio)
+
+              var radio=document.createElement("DIV");
+              radio.setAttribute("class","custom-control custom-radio custom-control-inline")
+
+              var input=document.createElement("INPUT")
+              input.setAttribute("id","none")
+              input.setAttribute("class","custom-control-input")
+              input.setAttribute("name","repeat")
+              input.setAttribute("type","radio")
+              input.setAttribute("value","none")
+              input.setAttribute("checked","")
+
+              var label=document.createElement("LABEL")
+              label.setAttribute("class","custom-control-label")
+              label.setAttribute("for","none")
+              label.innerHTML="None";
+
+              radio.appendChild(input)
+              radio.appendChild(label)
+              row2.appendChild(radio)
+              // 
+              
+              // input.setAttribute("type","text")
+              // input.setAttribute("autocomplete","off");
+              // input.setAttribute("required","")
+              
+              
+              
+              // // div2.appendChild(input)
+              
+              div.appendChild(row1);
+              div.appendChild(row2)
+              form.appendChild(div)
+            }
+
             var footer=document.createElement("DIV")
             footer.setAttribute("class","footer");
             footer.setAttribute("id","footer");
@@ -651,18 +767,21 @@ class meetingModal{
           modalDialogCentered.appendChild(content)
           modalFade.appendChild(modalDialogCentered)
           meeting_modal.appendChild(modalFade)
+          var allEvents=this.allMeetings
           for(var x in this.myMeetings){
             var eventOfId=this.eventOfId
             startTime=new Date(this.myMeetings[x]['start'])
             endTime=new Date(this.myMeetings[x]['end'])
-            if(this.start.getTime() === startTime.getTime() && this.end.getTime() == endTime.getTime()){
-              var allEvents=this.allMeetings
-
+            if(this.myMeetings[x]['id'] == this.clickedId){
+              
+              console.log(allEvents)
+              console.log("out on change date")
               var roomSpan=document.getElementById("edit-room-span")
               
               $('#update-start-time').datetimepicker({
                 autoclose: true,
               }).on('changeDate', function(ev){
+                console.log("on change date")
                 roomSpan.innerHTML=""
               var sel=document.createElement("SELECT");
               sel.setAttribute("class","edit-room")

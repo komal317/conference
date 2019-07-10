@@ -22,10 +22,11 @@ function getMyMeetingsFunction(xhttp){
     myMeetings=JSON.parse(xhttp.responseText)
     console.log(myMeetings)
     var calendarEl = document.getElementById('calendar');
-  
+    calendarEl.innerHTML="";
     var calendar = new FullCalendar.Calendar(calendarEl, {
       plugins: [ 'dayGrid', 'timeGrid', 'list','interaction' ],
-      events:  {url: "http://localhost:8181/events/my"},
+      // timeZone: 'UTC',
+      // events:  {url: "http://localhost:8181/api/events/my/past"},
       eventRender: function(info) {
         info.el.style.cursor = 'pointer';
         var tooltip = new Tooltip(info.el, {
@@ -36,8 +37,10 @@ function getMyMeetingsFunction(xhttp){
         });
       },
       eventClick: function(info) {
+        console.log("INFO .................... ID")
+        console.log(info.event.id)
         // console.log(info.description)
-        
+        document.getElementById("loader").style.display="block";
         console.log(info.event.start)
         var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
@@ -55,24 +58,34 @@ function getMyMeetingsFunction(xhttp){
                   xht.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
                         console.log("xht")
-                        let meetingmodal=new meetingModal(false,true,false,myMeetings,JSON.parse(xht.responseText),info.event.start,info.event.end,JSON.parse(xhttp.responseText),JSON.parse(x.responseText),JSON.parse(xh.responseText),info.event.id)
+                        console.log(JSON.parse(xht.responseText))
+                        document.getElementById("loader").style.display="none";
+                        let meetingmodal=new meetingModal(false,true,false,myMeetings,JSON.parse(xht.responseText),info.event.start,info.event.end,info.event.id,JSON.parse(xhttp.responseText),JSON.parse(x.responseText),JSON.parse(xh.responseText),info.event.id)
                         meetingmodal.move();
                     }
                   };
-                  xht.open("GET", 'http://localhost:8181/events/all', true);
+                  xht.open("GET", 'http://localhost:8181/api/events', true);
+                  xht.setRequestHeader("Content-type", "application/json");
+                  xht.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
                   xht.send();
                 }
               };
               xh.open("GET", 'http://localhost:8181/api/rooms', true);
+              xh.setRequestHeader("Content-type", "application/json");
+              xh.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
               xh.send();
             }
           };
-          x.open("GET", 'http://localhost:8181/teams/info', true);
+          x.open("GET", 'http://localhost:8181/api/teams', true);
+          x.setRequestHeader("Content-type", "application/json");
+          x.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
           x.send();
             
         }
       };
-      xhttp.open("GET", 'http://localhost:8181/users', true);
+      xhttp.open("GET", 'http://localhost:8181/api/users', true);
+      xhttp.setRequestHeader("Content-type", "application/json");
+      xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
       xhttp.send();
         
         
@@ -98,10 +111,40 @@ function getMyMeetingsFunction(xhttp){
      
     });
     calendar.render();
+    if(calendar.getEventSources()[0]){
+                        
+      calendar.getEventSources()[0].remove()  
+      calendar.addEventSource(myMeetings)
+    }
+    else{
+      calendar.addEventSource(myMeetings)
+    }
+    // var xht = new XMLHttpRequest();
+    // xht.onreadystatechange = function() {
+    //   if (this.readyState == 4 && this.status == 200) {
+                        
+    //     if(calendar.getEventSources()[0]){
+                        
+    //       calendar.getEventSources()[0].remove()  
+    //       calendar.addEventSource(JSON.parse(xht.responseText))
+    //     }
+    //     else{
+    //       calendar.addEventSource(JSON.parse(xht.responseText))
+    //     }
+    //   }
+    //   if(this.readyState == 4 && this.status == 404){
+
+    //   }
+    // };
+    // xht.open("GET", 'http://localhost:8181/api/events/my', true);
+    // xht.setRequestHeader("Content-type", "application/json");
+    // xht.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
+    // xht.send();
     $('.fc-header.toolbar').css("margin-bottom","0px");
     window.editMeeting = function(roomname,eventId){
       // var calendar = document.getElementById('calendar');
       // var calendar = new FullCalendar.Calendar(calendarEl)
+      document.getElementById("loader").style.display="block";
       console.log("hello")
       console.log(roomname)
       console.log(eventId)
@@ -143,29 +186,34 @@ function getMyMeetingsFunction(xhttp){
           // calendar.addEvent({
           //   title:title,
           //   start:start_date,
-          //   end:end_date
+          //   end:end_date,
+          //   members:sendselectedMembers,
+          //   roomName:selectedRoom
           // },calendar.getEventSources()[0])
-          if(calendar.getEventSources()[0]){
-            console.log(calendar.getEventSources()[0])
+          // if(calendar.getEventSources()[0]){
+          //   console.log(calendar.getEventSources()[0])
             
-            console.log(calendar.getEvents())
-            calendar.getEventSources()[0].remove()  
-            calendar.addEventSource("http://localhost:8181/events/my")
+          //   console.log(calendar.getEvents())
+          //   calendar.getEventSources()[0].remove()  
+          //   calendar.addEventSource("http://localhost:8181/api/events/my")
             
            
-          }
-          else{
-            calendar.addEventSource("http://localhost:8181/events/my")
+          // }
+          // else{
+          //   calendar.addEventSource("http://localhost:8181/api/events/my")
             
-          }
+          // }
+          document.getElementById("loader").style.display="none";
+          getMyMeetings("events/my")
 
         }
       };
     
-      xhttp.open("POST", "http://localhost:8181/send", true);
+      xhttp.open("PUT", "http://localhost:8181/api/events", true);
       xhttp.setRequestHeader("Content-type", "application/json");
       xhttp.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
       xhttp.send(JSON.stringify({
+        'id':eventId,
         'title':title,
         'agenda':agenda,    
         'start':start_date,
@@ -173,7 +221,7 @@ function getMyMeetingsFunction(xhttp){
         'members':sendselectedMembers,
         // 'teams':team,
         'roomName':selectedRoom,
-        'repeat':" daily,weekly none"
+        'repeat':"none"
       }));  
       $("#meeting-popup").modal("hide")
       return true;
@@ -185,9 +233,32 @@ function getMyMeetingsFunction(xhttp){
       e.preventDefault();
     
     });
-
+    window.cancelMeeting=function(id){
+      // e.preventDefault();
+      document.getElementById("loader").style.display="block";
+      $("#meeting-popup").modal("hide")
+      
+      console.log(id)
+      console.log("cancel")
+      var xht = new XMLHttpRequest();
+      xht.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          
+          console.log(id)
+          console.log(calendar.getEventById("'"+id+"'"))
+          calendar.getEventById(id).remove()
+         
+          document.getElementById("loader").style.display="none";
+          
+        }
+      };
+      xht.open("DELETE", 'http://localhost:8181/api/events', true);
+      xht.setRequestHeader("Content-type", "application/json");
+      xht.setRequestHeader("Authorization", "Bearer "+ sessionStorage.getItem("token"));
+      xht.send(JSON.stringify({'eventId':id}));
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    getMyMeetings("/events/my")
+    getMyMeetings("events/my")
 })

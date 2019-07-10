@@ -1,7 +1,7 @@
 
 
 
-<nav class="navbar navbar-expand-md" style="border-bottom-left-radius: 34px;border-bottom-right-radius: 34px;background-color: white;padding:0 21px 0 5px;">
+<nav class="navbar navbar-expand-md" style="border-bottom-left-radius: 34px;border-bottom-right-radius: 34px;background-color: white;padding:0 10px 0 5px;">
         <a href="#" class="navbar-brand" style="color:#63b0c5;font-family: 'Comfortaa', cursive;font-size: 50px;">
             <img src="../assets/img/Group 300.png" style="margin-top: -10px;">
             <span style="margin-bottom: -4rem">Meet In</span>
@@ -12,39 +12,61 @@
         
         <div class="collapse navbar-collapse" id="navbarCollapse">
             
-            <div class="navbar-nav ml-auto" id="nav-bar" style="color:#63b0c5;font-size: 25px;">
+            <div class="navbar-nav ml-auto" id="nav-bar" style="color:#63b0c5;font-size: 25px;align-items: flex-end">
                 <a href="../home/home.html" class="nav-item nav-link active" id="home" style="color:#63b0c5;">Home</a>
                 <a href="../meetings/meetings.html" class="nav-item nav-link" id="meetings" style="color:#63b0c5;">Meetings</a>
                 <a href="../teams/teams.html" class="nav-item nav-link" id="teams" style="color:#63b0c5;">Teams</a>
-                <a href="javascript:logout();" class="nav-item nav-link" id="profile" style="color:#63b0c5;">Logout</a>
                 
-                <!-- <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Profile
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Change Password</a>
-                    <a class="dropdown-item" href="#">Logout</a>
-                  </div> -->
+                    <ul style="list-style-type: none;margin-bottom: 0px">
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="profile" data-toggle="dropdown" aria-expanded="false" style="color:#63b0c5;">
+                                        Profile
+                                      </a>
+                                      <div class="dropdown-menu dropdown-menu-right" id="profile-dropdown" aria-labelledby="profile">
+                                        <a class="dropdown-item" href="../settings/settings.html">Settings</a>
+                                        <a class="dropdown-item" href="javascript:logout();">Logout</a>
+                                      </div>
+                        </li>
+                    </ul>
+                
             </div>
         </div>
                 
     </nav>
+    <div class="modal fade" id="error-popup" tabindex="-1" role="dialog" aria-labelledby="error-popupTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <!-- <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5> -->
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  There was an internal error. Try again later.
+                </div>
+                
+              </div>
+            </div>
+          </div>
 <script>
     $(function(){
-        if(sessionStorage.getItem("isAdmin")==="true"){
-            var navi=document.getElementById("nav-bar")
+        
+        console.log(sessionStorage.getItem("isAdmin"))
+        
+        if(sessionStorage.getItem("isAdmin")){
+            var navi=document.getElementById("profile-dropdown")
             var a=document.createElement("A")
             a.setAttribute("href","../admin/admin.html")
-            a.setAttribute("class","nav-item nav-link")
-            a.setAttribute("style","color:#63b0c5;")
+            a.setAttribute("class","dropdown-item")
+            // a.setAttribute("style","color:#63b0c5;")
             a.setAttribute("id","Admin")
             a.innerHTML="Admin"
-            navi.appendChild(a)
+            navi.insertAdjacentElement('afterbegin',a)
         }
     })
     function logout(){
         sessionStorage.removeItem("token")
         window.location.href="../index.html"; 
-  // console.log(document.getElementById('included-navbar').childNodes.childNodes)
     }
 </script>

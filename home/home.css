@@ -58,7 +58,9 @@ body {
   
     
 }
-
+.fc-toolbar.fc-header-toolbar{
+  margin-bottom: 0px !important;
+}
 .booking-row{
   
   display: none;
@@ -183,4 +185,106 @@ input:-webkit-autofill:active  {
 }
 .filter-option-inner-inner{
   color:#495057;
+}
+
+
+/* admin */
+
+
+#allEmployeesSearch {
+  /* background-image: url('/css/searchicon.png');
+  background-position: 10px 12px;
+  background-repeat: no-repeat; */
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  /* border: 1px solid #ddd; */
+  margin-bottom: 12px;
+}
+
+#allEmployeesSearchList {
+  /* list-style-type: none; */
+  padding: 0;
+  margin: 0;
+}
+
+#allEmployeesSearchList li  {
+  /* border: 1px solid #ddd;
+  margin-top: -1px; 
+  background-color: #f6f6f6;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block */
+}
+
+#allEmployeesSearchList li:hover:not(.header) {
+  /* background-color: #eee; */
+}
+
+
+#allTeamsSearch {
+  /* background-image: url('/css/searchicon.png');
+  background-position: 10px 12px;
+  background-repeat: no-repeat; */
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+#allTeamsSearchList {
+  /* list-style-type: none; */
+  padding: 0;
+  margin: 0;
+}
+
+#allTeamsSearchList li  {
+  /* border: 1px solid #ddd;
+  margin-top: -1px; 
+  background-color: #f6f6f6;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block */
+}
+
+#allTeamsSearchList li:hover:not(.header) {
+  background-color: #eee;
+}
+
+.tabcontent{
+  display: none;
+}
+
+#v-pills-tab a{
+  color: white;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link{
+  background-color: #184263 !important;
+}
+/* #v-pills-tab a:active{
+  background-color: #184263;
+  color: white;
+} */
+#allTeamsSearchList .list-group-item.active{
+  background-color: #184263 !important;
+  border-color: #184263 !important;
+}
+
+#loader{
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
 }
